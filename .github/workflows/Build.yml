@@ -1,0 +1,36 @@
+name: Build Dreamcast Binary
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/dreamcast-rs/kallistios:latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Build with Make
+        run: |
+          make clean
+          make
+
+      - name: Upload Dreamcast Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dreamcast-binaries
+          path: |
+            *.elf
+            *.bin
+            *.srec
+            DEMOPORTS/**/*.elf
+            DEMOPORTS/**/*.bin
